@@ -238,7 +238,9 @@ struct Response {
 
   void RespondViaHTTP(Request r) const {
     if (initialized) {
-      r(body, code, content_type, headers);
+      current::net::http::Headers newheaders(headers);
+      newheaders.Set("Access-Control-Allow-Origin", "*");       // ML: dirty hack
+      r(body, code, content_type, newheaders);
     }
     // Else, a 500 "INTERNAL SERVER ERROR" will be returned, since `Request`
     // has not been served upon destructing at the exit from this method.
